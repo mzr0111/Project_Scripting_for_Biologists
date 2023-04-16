@@ -181,6 +181,7 @@ samtools index -@ 48 "$NAME".markdup.sorted.bam
 done
 
 ### Variant Calling:
+Haplotype caller is the most widely used approach for variant calling , which is a part of the Genome Analysis Toolkit (GATK) developed by the Broad Institute. The haplotype caller is designed to accurately detect single nucleotide variants (SNVs), insertions, deletions, and complex variations in DNA sequences, making it a powerful tool for identifying genetic mutations, polymorphisms, and other genomic variations. The haplotype caller employs a probabilistic model to analyze WGS data, taking into account the unique characteristics of the data, such as base quality scores, read mapping quality, and local sequence context.
 
 Script:
 
