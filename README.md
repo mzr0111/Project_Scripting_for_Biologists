@@ -69,8 +69,11 @@ BWA-MEM (Burrows-Wheeler Aligner - Maximal Exact Match) is a popular and widely 
 Script:
 
 #!/bin/sh
+
 cd /home/scripting_project/
+
 module load bwa
+
 module load samtools
 
 #######Read the contents of BWA_SampleList.txt and store it in the variable LIST########
