@@ -6,7 +6,32 @@ Breast cancer is a complex and heterogeneous disease with diverse genetic altera
 In this project, I utilized WGS data to identify genetic variants in breast cancer samples using Genomic Analysis Tool Kit (GATK) best practices. Variant calling is a critical step in the analysis of WGS data, where the goal is to identify DNA sequence changes, such as single nucleotide polymorphisms (SNPs) and small insertions/deletions (indels), that may underlie breast cancer pathogenesis. By applying haplotype caller to breast cancer WGS data, I aimed to comprehensively characterize the spectrum of genetic variants in the genome, which may contribute to our understanding of the molecular mechanisms underlying breast cancer development and progression.
 
 ## Bioinformatics Processing of the Data:
-Quality Control of the WGS raw data
+### Quality Control of the WGS raw data: 
+#### FastQC:
+FastQC (Fast Quality Control) is a widely used software tool for assessing the quality of whole-genome sequencing (WGS) data. WGS data can be prone to various errors and biases that can affect the accuracy and reliability of downstream analyses. FastQC is designed to provide a quick and comprehensive overview of the quality of WGS data, allowing researchers to identify potential issues and make informed decisions regarding data processing and analysis. 
+
+Script:
+
+#!/bin/sh
+
+########This line changes the current directory to /home/scripting_project/, which is the directory where the FastQC analysis will be performed#######
+
+cd /home/scripting_project/
+
+########This line loads the FastQC module in Easley computing cluster, which makes the FastQC software available for use in the script##########
+
+module load fastqc
+
+########This line starts a for loop that iterates over all the files in the current directory that have the file extension _1.fastq.gz. The QUALITY variable will hold the name of each file in each iteration of the loop.########
+
+for QUALITY in *_1.fastq.gz
+do
+
+########This line runs the FastQC command on the current file specified by the QUALITY variable######
+
+fastqc $QUALITY
+
+done
 
 
 
