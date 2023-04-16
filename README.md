@@ -103,6 +103,7 @@ samtools view -Sb -@ 48 "$NAME".mem.sam -o "$NAME".mem.bam
 samtools sort -@ 48 "$NAME".mem.bam -o "$NAME".memsorted.bam
 
 ########This creates an index for the sorted BAM file using samtools index command#######
+
 samtools index -@ 48 "$NAME".memsorted.bam
 
 gzip "$NAME".trim_1P.fastq "$NAME".trim_2P.fastq
