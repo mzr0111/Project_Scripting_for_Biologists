@@ -5,8 +5,7 @@ Breast cancer is a complex and heterogeneous disease with diverse genetic altera
 
 In this project, I utilized WGS data to identify genetic variants in breast cancer samples using Genomic Analysis Tool Kit (GATK) best practices. Variant calling is a critical step in the analysis of WGS data, where the goal is to identify DNA sequence changes, such as single nucleotide polymorphisms (SNPs) and small insertions/deletions (indels), that may underlie breast cancer pathogenesis. By applying haplotype caller to breast cancer WGS data, I aimed to comprehensively characterize the spectrum of genetic variants in the genome, which may contribute to our understanding of the molecular mechanisms underlying breast cancer development and progression.
 
-## Bioinformatics Processing of the Data:
-### Quality Control of the WGS raw data: 
+## Bioinformatics Processing of the Data: 
 ### 1. FastQC:
 FastQC (Fast Quality Control) is a widely used software tool for assessing the quality of whole-genome sequencing (WGS) data. WGS data can be prone to various errors and biases that can affect the accuracy and reliability of downstream analyses. FastQC is designed to provide a quick and comprehensive overview of the quality of WGS data, allowing researchers to identify potential issues and make informed decisions regarding data processing and analysis. It is done before and after the trimming of the raw fastq read data.
 
@@ -107,7 +106,7 @@ gzip "$NAME".trim_1P.fastq "$NAME".trim_2P.fastq
 
 done
 
-### Add Read Group:
+### 4. Add Read Group:
 One crucial step is the addition or replacement of read group information, which provides essential metadata associated with each read. This information includes details such as sample identification, sequencing platform, library preparation method, and sequencing center, and is critical for downstream analyses, such as variant calling and genotyping.
 
 Script:
@@ -149,7 +148,7 @@ samtools index -@ 48 "$NAME".rgsorted.bam
 
 done
 
-### Marking Duplicate Reads:
+### 5. Marking Duplicate Reads:
 This step is used to identify and remove duplicate reads that arise during the sequencing process. Duplicate reads can occur due to various factors such as amplification bias during library preparation, PCR amplification artifacts, and optical duplicates caused by clustered sequencing of the same DNA fragments. These duplicates can lead to biased results, inaccurate variant calling, and inflated coverage metrics.
 
 Script:
@@ -180,7 +179,7 @@ samtools index -@ 48 "$NAME".markdup.sorted.bam
 
 done
 
-### Variant Calling:
+### 6. Variant Calling:
 Haplotype caller is the most widely used approach for variant calling , which is a part of the Genome Analysis Toolkit (GATK) developed by the Broad Institute. The haplotype caller is designed to accurately detect single nucleotide variants (SNVs), insertions, deletions, and complex variations in DNA sequences, making it a powerful tool for identifying genetic mutations, polymorphisms, and other genomic variations. The haplotype caller employs a probabilistic model to analyze WGS data, taking into account the unique characteristics of the data, such as base quality scores, read mapping quality, and local sequence context.
 
 Script:
