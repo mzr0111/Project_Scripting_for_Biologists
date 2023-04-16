@@ -7,7 +7,7 @@ In this project, I utilized WGS data to identify genetic variants in breast canc
 
 ## Bioinformatics Processing of the Data:
 ### Quality Control of the WGS raw data: 
-#### FastQC:
+### 1. FastQC:
 FastQC (Fast Quality Control) is a widely used software tool for assessing the quality of whole-genome sequencing (WGS) data. WGS data can be prone to various errors and biases that can affect the accuracy and reliability of downstream analyses. FastQC is designed to provide a quick and comprehensive overview of the quality of WGS data, allowing researchers to identify potential issues and make informed decisions regarding data processing and analysis. It is done before and after the trimming of the raw fastq read data.
 
 Script:
@@ -33,7 +33,7 @@ fastqc $QUALITY
 
 done
 
-#### Trimming:
+### 2. Trimming:
 Trimming is an essential step in the quality control process of Whole Genome Sequencing (WGS) data analysis. Trimmomatic is a command-line tool that provides a comprehensive suite of trimming options, allowing users to customize trimming parameters based on the specific characteristics of their WGS data. It employs various algorithms, including sliding window approach and quality-based trimming, to identify and remove low-quality regions from sequencing reads, resulting in improved data quality and increased accuracy in downstream analyses. It helps to remove the sequencing adapters.
 
 Script:
@@ -64,7 +64,7 @@ java -jar /tools/trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 48 -phred33 -
 
 done
 
-#### Mapping:
+### 3. Mapping:
 
 Script:
 
