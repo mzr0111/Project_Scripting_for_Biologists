@@ -179,6 +179,7 @@ java -jar /tools/picard-2.23.9/libs/picard.jar MarkDuplicates \
       M="$NAME".marked_dup_metrics.txt
 
 samtools sort -@ 48 "$NAME".markdup.bam -o "$NAME".markdup.sorted.bam
+
 samtools index -@ 48 "$NAME".markdup.sorted.bam
 
 done
