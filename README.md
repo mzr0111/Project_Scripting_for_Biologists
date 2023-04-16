@@ -214,8 +214,7 @@ gatk --java-options "-Xmx80g" HaplotypeCaller  \
 done
 
 ## Results:
-
-
+A total of 65305638 variants were called from the WGS data of breast cancer patients using the haplotype caller algorithm. Further downstream analysis, including variant filtering, annotation, and pathogenicity assessment, could be performed to refine the variant list and identify potentially clinically relevant variants.
 
 ## Conclusion:
 In conclusion, this study utilized whole genome sequencing data and GATK best practices to identify genetic variants in breast cancer samples, providing valuable insights into the genomic landscape of breast cancer. The findings contribute to the growing understanding of the genetic alterations that drive breast cancer development and progression.
