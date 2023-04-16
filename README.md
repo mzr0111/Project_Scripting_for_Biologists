@@ -107,8 +107,111 @@ gzip "$NAME".trim_1P.fastq "$NAME".trim_2P.fastq
 
 done
 
+### Add Read Group:
+One crucial step is the addition or replacement of read group information, which provides essential metadata associated with each read. This information includes details such as sample identification, sequencing platform, library preparation method, and sequencing center, and is critical for downstream analyses, such as variant calling and genotyping.
 
+Script:
 
+#!/bin/sh
+
+module load samtools
+module load gatk
+module load picard
+
+####Read the contents of RG_SampleList.txt and store it in the variable LIST#####
+
+LIST=`cat RG_SamplesList.txt
+
+for FILE in $LIST; do
+
+########Extract the filename without the extension and store it in the variable NAME using awk########
+
+NAME=`echo $FILE | awk -F "." '{print $1}'`
+
+######The following line runs the Java executable and executes the Picard tool AddOrReplaceReadGroups using its JAR file#######
+
+java -jar /tools/picard-2.23.9/libs/picard.jar AddOrReplaceReadGroups \
+       I="$NAME".memsorted.bam \
+       O="$NAME".rg.bam \
+       RGID="$NAME" \
+       RGLB=lib1 \
+       RGPL=ILLUMINA \
+       RGPU=unit1 \
+       RGSM="$NAME"_WGS1
+ 
+########This sorts the BAM file by coordinates using samtools sort command########
+
+samtools sort -@ 48 "$NAME".rg.bam -o "$NAME".rgsorted.bam
+
+#########This creates an index for the sorted BAM file using samtools index command########
+
+samtools index -@ 48 "$NAME".rgsorted.bam
+
+done
+
+### Marking Duplicate Reads:
+This step is used to identify and remove duplicate reads that arise during the sequencing process. Duplicate reads can occur due to various factors such as amplification bias during library preparation, PCR amplification artifacts, and optical duplicates caused by clustered sequencing of the same DNA fragments. These duplicates can lead to biased results, inaccurate variant calling, and inflated coverage metrics.
+
+Script:
+
+#!/bin/sh
+
+module load picard
+module load samtools
+
+####Read the contents of MD_SampleList.txt and store it in the variable LIST#####
+
+LIST=`cat MD_SamplesList.txt
+for FILE in $LIST; do
+
+########Extract the filename without the extension and store it in the variable NAME using awk#######
+
+NAME=`echo $FILE | awk -F "." '{print $1}'`
+
+#########The following line runs the Java executable and executes the Picard tool MarkDuplicates using its JAR file########
+
+java -jar /tools/picard-2.23.9/libs/picard.jar MarkDuplicates \
+      I="$NAME".rgsorted.bam \
+      O="$NAME".markdup.bam \
+      M="$NAME".marked_dup_metrics.txt
+
+samtools sort -@ 48 "$NAME".markdup.bam -o "$NAME".markdup.sorted.bam
+samtools index -@ 48 "$NAME".markdup.sorted.bam
+
+done
+
+### Variant Calling:
+
+Script:
+
+#!/bin/sh
+
+module load gatk 
+
+########Read the contents of Hap_SampleList.txt and store it in the variable LIST#########
+
+LIST=`cat Hap_SamplesList.txt
+for FILE in $LIST; do
+
+#########Extract the filename without the extension and store it in the variable NAME using awk#########
+
+NAME=`echo $FILE | awk -F "." '{print $1}'`
+
+#########Runs GATK HaplotypeCaller##########
+
+gatk --java-options "-Xmx80g" HaplotypeCaller  \
+
+#########Reference genome path##########   
+-R /hosted/cvmpt/archive/Human_Genome/genome.fa \
+   -I "$NAME".markdup.sorted.bam \
+   -O "$NAME".g.vcf.gz \
+   -ERC GVCF \    #######Specifies the type of variant calls to be generated, which is gVCF (genomic VCF) in this case########
+   -A AlleleFraction \
+   -A BaseQuality \
+   -A MappingQuality \
+   --native-pair-hmm-threads 48 
+ 
+done
 
 ## Results:
 
