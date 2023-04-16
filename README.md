@@ -211,6 +211,7 @@ gatk --java-options "-Xmx80g" HaplotypeCaller  \
    -I "$NAME".markdup.sorted.bam \
    -O "$NAME".g.vcf.gz \
    -ERC GVCF \    #######Specifies the type of variant calls to be generated, which is gVCF (genomic VCF) in this case########
+   
    -A AlleleFraction \
    -A BaseQuality \
    -A MappingQuality \
