@@ -8,7 +8,7 @@ In this project, I utilized WGS data to identify genetic variants in breast canc
 ## Bioinformatics Processing of the Data:
 ### Quality Control of the WGS raw data: 
 #### FastQC:
-FastQC (Fast Quality Control) is a widely used software tool for assessing the quality of whole-genome sequencing (WGS) data. WGS data can be prone to various errors and biases that can affect the accuracy and reliability of downstream analyses. FastQC is designed to provide a quick and comprehensive overview of the quality of WGS data, allowing researchers to identify potential issues and make informed decisions regarding data processing and analysis. 
+FastQC (Fast Quality Control) is a widely used software tool for assessing the quality of whole-genome sequencing (WGS) data. WGS data can be prone to various errors and biases that can affect the accuracy and reliability of downstream analyses. FastQC is designed to provide a quick and comprehensive overview of the quality of WGS data, allowing researchers to identify potential issues and make informed decisions regarding data processing and analysis. It is done before and after the trimming of the raw fastq read data.
 
 Script:
 
@@ -18,7 +18,7 @@ Script:
 
 cd /home/scripting_project/
 
-########This line loads the FastQC module in Easley computing cluster, which makes the FastQC software available for use in the script##########
+########This line loads the FastQC module in the computing cluster, which makes the FastQC software available for use in the script##########
 
 module load fastqc
 
@@ -33,6 +33,78 @@ fastqc $QUALITY
 
 done
 
+#### Trimming:
+Trimming is an essential step in the quality control process of Whole Genome Sequencing (WGS) data analysis. Trimmomatic is a command-line tool that provides a comprehensive suite of trimming options, allowing users to customize trimming parameters based on the specific characteristics of their WGS data. It employs various algorithms, including sliding window approach and quality-based trimming, to identify and remove low-quality regions from sequencing reads, resulting in improved data quality and increased accuracy in downstream analyses. It helps to remove the sequencing adapters.
+
+Script:
+
+#!/bin/sh
+
+cd /home/scripting_project/
+
+module load trimmomatic/0.39
+
+#######List all files ending with _1.fastq.gz in the current directory and save the list in a file called SampleList.txt######
+
+ls *_1.fastq.gz > Trim_SampleList.txt
+
+######Read the contents of SampleList.txt and store it in the variable LIST#######
+
+LIST=`cat Trim_SampleList.txt`
+for FILE in $LIST
+do
+
+#######Extract the filename without the extension and store it in the variable NAME using awk. It should be changed based on the sample name######
+
+NAME=`echo $FILE | awk -F "." '{print $1}'`
+
+########Run the Trimmomatic tool with specified parameters on the current file########
+
+java -jar /tools/trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 48 -phred33 -trimlog $NAME.trim.log "$NAME"_1.fastq.gz "$NAME"_2.fastq.gz -baseout $NAME.trim.fastq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 HEADCROP:0 LEADING:0 TRAILING:0 SLIDINGWINDOW:4:10
+
+done
+
+#### Mapping:
+
+Script:
+
+#!/bin/sh
+cd /home/scripting_project/
+module load bwa
+module load samtools
+
+#######Read the contents of SampleList.txt and store it in the variable LIST########
+
+LIST=`cat BWA_SamplesList.txt
+for FILE in $LIST; do
+
+######Extract the filename without the extension and store it in the variable NAME using awk######
+
+NAME=`echo $FILE | awk -F "." '{print $1}'`
+
+#######This decompresses gzip-compressed fastq files#######
+
+gzip -d "$NAME".trim_1P.fastq.gz "$NAME".trim_2P.fastq.gz
+
+#######This performs sequence alignment using bwa mem command with the -t option set to 48 (indicating the number of threads to use), and the -M option (which marks shorter split hits as secondary)##########   
+      
+bwa mem -t 48 -M /hosted/cvmpt/archive/Human_Genome/genome "$NAME".trim_1P.fastq \
+"$NAME".trim_2P.fastq > "$NAME".mem.sam
+
+#######This converts the SAM file to a binary BAM file using samtools view command with the -Sb options, and the -@ option set to 48 (indicating the number of threads to use).########
+
+samtools view -Sb -@ 48 "$NAME".mem.sam -o "$NAME".mem.bam
+
+########This sorts the BAM file by coordinates using samtools sort command#######
+
+samtools sort -@ 48 "$NAME".mem.bam -o "$NAME".memsorted.bam
+
+########This creates an index for the sorted BAM file using samtools index command#######
+samtools index -@ 48 "$NAME".memsorted.bam
+
+gzip "$NAME".trim_1P.fastq "$NAME".trim_2P.fastq
+
+done
 
 
 
